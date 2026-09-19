@@ -1,0 +1,102 @@
+{
+  "generated_at": "2026-09-19T04:01:09.967450+00:00",
+  "groups": [
+    {
+      "library_versions": [
+        "1.13.0"
+      ],
+      "submissions": [
+        {
+          "submission_file": "gpt-5.4-nano__bare-api__1.13.0__20260918.jsonl",
+          "model": "gpt-5.4-nano",
+          "framework": "bare-api",
+          "provider": "openai",
+          "library_version": "1.13.0",
+          "total_rows": 300,
+          "pass": 236,
+          "uncertain": 56,
+          "fail": 8,
+          "vulnerable": 0,
+          "pass_rate": 0.7867,
+          "fail_vulnerable_rate": 0.0267,
+          "mean_attack_success_rate": 0.06
+        },
+        {
+          "submission_file": "claude-haiku-4-5-20251001__bare-api__1.13.0__20260918.jsonl",
+          "model": "claude-haiku-4-5-20251001",
+          "framework": "bare-api",
+          "provider": "anthropic",
+          "library_version": "1.13.0",
+          "total_rows": 300,
+          "pass": 232,
+          "uncertain": 62,
+          "fail": 5,
+          "vulnerable": 1,
+          "pass_rate": 0.7733,
+          "fail_vulnerable_rate": 0.02,
+          "mean_attack_success_rate": 0.0633
+        },
+        {
+          "submission_file": "gpt-5.5__bare-api__1.13.0__20260918.jsonl",
+          "model": "gpt-5.5",
+          "framework": "bare-api",
+          "provider": "openai",
+          "library_version": "1.13.0",
+          "total_rows": 300,
+          "pass": 217,
+          "uncertain": 81,
+          "fail": 2,
+          "vulnerable": 0,
+          "pass_rate": 0.7233,
+          "fail_vulnerable_rate": 0.0067,
+          "mean_attack_success_rate": 0.0708
+        },
+        {
+          "submission_file": "claude-opus-4-8__bare-api__1.13.0__20260918.jsonl",
+          "model": "claude-opus-4-8",
+          "framework": "bare-api",
+          "provider": "anthropic",
+          "library_version": "1.13.0",
+          "total_rows": 300,
+          "pass": 185,
+          "uncertain": 113,
+          "fail": 2,
+          "vulnerable": 0,
+          "pass_rate": 0.6167,
+          "fail_vulnerable_rate": 0.0067,
+          "mean_attack_success_rate": 0.0975
+        },
+        {
+          "submission_file": "gemini-3.5-flash__bare-api__1.13.0__20260918.jsonl",
+          "model": "gemini-3.5-flash",
+          "framework": "bare-api",
+          "provider": "google",
+          "library_version": "1.13.0",
+          "total_rows": 300,
+          "pass": 191,
+          "uncertain": 95,
+          "fail": 14,
+          "vulnerable": 0,
+          "pass_rate": 0.6367,
+          "fail_vulnerable_rate": 0.0467,
+          "mean_attack_success_rate": 0.1025
+        },
+        {
+          "submission_file": "gemini-3.1-flash-lite__bare-api__1.13.0__20260918.jsonl",
+          "model": "gemini-3.1-flash-lite",
+          "framework": "bare-api",
+          "provider": "google",
+          "library_version": "1.13.0",
+          "total_rows": 300,
+          "pass": 152,
+          "uncertain": 130,
+          "fail": 17,
+          "vulnerable": 1,
+          "pass_rate": 0.5067,
+          "fail_vulnerable_rate": 0.06,
+          "mean_attack_success_rate": 0.14
+        }
+      ]
+    }
+  ]
+}

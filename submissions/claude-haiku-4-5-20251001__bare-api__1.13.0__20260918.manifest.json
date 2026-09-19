@@ -1,0 +1,10 @@
+{
+  "harness_version": "0.1.0",
+  "library_version": "1.13.0",
+  "model": "claude-haiku-4-5-20251001",
+  "framework": "bare-api",
+  "started_at": "unknown (converted from a pre-existing safelabs-eval scoring run, not a live agentport-bench run)",
+  "finished_at": "unknown (converted from a pre-existing safelabs-eval scoring run, not a live agentport-bench run)",
+  "trial_count": 300,
+  "include_raw_output": false
+}

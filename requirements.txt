@@ -1,0 +1,13 @@
+# Pinned to an exact commit, not a floating branch or tag. agentport_bench
+# is unreleased (v0.1.0) -- a floating ref would let unrelated future
+# safelabs-eval commits silently change what this repo's CI validates and
+# what leaderboard/build_leaderboard.py aggregates against.
+#
+# This is the ONLY dependency: agentport_bench needs nothing beyond
+# safelabs-eval's own base install (pydantic, click) for validate/schema/
+# CLI use -- see docs/AGENTPORT_BENCH.md sec.8 in safelabs-eval.
+#
+# To bump this pin: see CONTRIBUTING.md's "Updating the pinned
+# safelabs-eval commit" section -- re-validate every existing submission
+# against the new commit before merging the bump.
+git+https://github.com/AgentSafeLabs/safelabs-eval.git@8aadf12

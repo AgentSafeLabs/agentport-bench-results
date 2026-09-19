@@ -1,0 +1,91 @@
+name: Validate submission
+
+# Runs on any PR touching submissions/ -- gates merges on:
+#   1. `agentport-bench validate` against every changed .jsonl (the real
+#      package, pinned via requirements.txt -- never reimplemented here).
+#      CI fails iff the submission is REJECTED (the tool's own exit code /
+#      `accepted: false`). FLAG-severity issues are printed for reviewer
+#      visibility but do not block the merge -- this mirrors validate's
+#      own accept/flag/reject semantics rather than second-guessing them
+#      (flags are documented, everywhere in agentport_bench, as
+#      "accepted, marked for human review", not a merge-blocking state;
+#      requiring e.g. payload_hash_unverified to clear would make every
+#      submission unmergeable, since --verify-sample is deliberately
+#      optional).
+#   2. A manifest-side belt-and-suspenders privacy check
+#      (scripts/check_manifest_no_raw_output.py): the matching
+#      .manifest.json's include_raw_output must be false. Supplementary
+#      to (1)'s schema-level extra="forbid" protection, not a
+#      replacement -- this catches a hand-built submission with a
+#      missing or dishonest manifest, which schema validation alone
+#      can't see.
+on:
+  pull_request:
+    paths:
+      - "submissions/**"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out PR
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install agentport_bench (pinned commit -- see requirements.txt)
+        run: pip install -r requirements.txt
+
+      - name: Find changed submission files
+        id: changed
+        run: |
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          CHANGED=$(git diff --name-only --diff-filter=ACM "$BASE_SHA" "$HEAD_SHA" -- 'submissions/*.jsonl')
+          echo "files<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$CHANGED" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+          if [ -z "$CHANGED" ]; then
+            echo "No submissions/*.jsonl files changed in this PR."
+          else
+            echo "Changed submission file(s):"
+            echo "$CHANGED"
+          fi
+
+      - name: Validate each changed submission
+        if: steps.changed.outputs.files != ''
+        env:
+          CHANGED_FILES: ${{ steps.changed.outputs.files }}
+        run: |
+          set +e
+          FAILED=0
+
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+
+            echo "::group::agentport-bench validate $file"
+            agentport-bench validate "$file"
+            validate_exit_code=$?
+            echo "::endgroup::"
+            if [ "$validate_exit_code" -ne 0 ]; then
+              echo "::error file=$file::agentport-bench validate rejected this submission (schema/key/prompt-id/payload_hash check -- see log above for the specific reject code)."
+              FAILED=1
+            fi
+
+            manifest="${file%.jsonl}.manifest.json"
+            echo "::group::manifest privacy check for $manifest"
+            python3 scripts/check_manifest_no_raw_output.py "$manifest"
+            manifest_check_exit_code=$?
+            echo "::endgroup::"
+            if [ "$manifest_check_exit_code" -ne 0 ]; then
+              echo "::error file=$manifest::manifest privacy check failed -- see log above."
+              FAILED=1
+            fi
+          done <<< "$CHANGED_FILES"
+
+          exit $FAILED
