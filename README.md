@@ -2,9 +2,16 @@
 
 Public results repository for **AgentPort-Bench**: a multi-contributor, cross-framework
 agent-safety benchmark built on [safelabs-eval](https://github.com/AgentSafeLabs/safelabs-eval)'s
-OWASP ASI prompt library and scoring pipeline. See
+ASI-category prompt library (ASI01–ASI10) and scoring pipeline. See
 [`docs/AGENTPORT_BENCH.md`](https://github.com/AgentSafeLabs/safelabs-eval/blob/main/docs/AGENTPORT_BENCH.md)
 in that repo for the full design.
+
+**Taxonomy note.** The prompt library's ASI01–ASI10 categories are an independently
+structured category set that differs from OWASP's official
+[Top 10 for Agentic Applications 2026](https://genai.owasp.org/2025/12/09/owasp-top-10-for-agentic-applications-the-benchmark-for-agentic-security-in-the-age-of-autonomous-ai/)
+(published Dec 9, 2025). The official list also numbers its categories `ASI01`–`ASI10`,
+so an ID here does not refer to the same category as OWASP's identically-numbered one.
+This corpus is not currently mapped to the official taxonomy.
 
 **This repo hosts submissions and the leaderboard. It does not define its own submission
 format or validation logic** — both come from the `agentport_bench` package in
