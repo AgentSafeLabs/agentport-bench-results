@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/logo-full.png" alt="AgentPort-Bench Results" width="400">
+</p>
+
 # AgentPort-Bench Results
 
 Public results repository for **AgentPort-Bench**: a multi-contributor, cross-framework
