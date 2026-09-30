@@ -11,7 +11,74 @@ If you didn't produce your file with `agentport-bench run`, it must still valida
 as a sequence of `BenchTrialResult` rows with a truthful `.manifest.json` sidecar
 (`agentport-bench manifest --output <file>` will (re)generate one from an existing file's
 rows if needed — `started_at`/`finished_at` will be marked `"unknown"` rather than
-fabricated, which is expected and fine).
+fabricated, which is expected and fine). The six files currently in `submissions/` are of this
+kind: **converted from a prior safelabs-eval run; timestamps unavailable; `bare-api` with a shared
+1,000-token cap** (see [`scripts/convert_safelabs_eval_run.py`](scripts/convert_safelabs_eval_run.py)).
+
+## Requirements
+
+- **Python 3.11 or newer** (the package requires it; CI uses 3.12), **git**, and network access.
+- Install with `pip install -r requirements.txt` from the root of your clone. The file pins one
+  exact `safelabs-eval` commit (`8aadf12` at the time of writing; the file is the source of truth)
+  and `agentport_bench` ships inside that package.
+- **The pip warning.** Installing prints
+  `WARNING: Did not find branch or tag '8aadf12', assuming revision or ref.` It is expected and
+  harmless: the pin is a commit hash, not a branch or tag, so pip checks out that revision. Any
+  other error or warning is not expected and worth reporting.
+
+## Fork-and-PR flow
+
+1. Fork this repo on GitHub, clone your fork, and create a branch.
+2. Install (above), run `agentport-bench run`, and run `agentport-bench validate` on the result.
+3. Add **both** files — the `.jsonl` and its `.manifest.json` — under `submissions/` on your
+   branch, commit, and push to your fork.
+4. Open a pull request from your branch to this repo's `main`. CI runs on the PR (see below); for a
+   first-time contributor GitHub may ask a maintainer to approve the workflow run.
+5. A maintainer reviews and merges. **A maintainer then regenerates the leaderboard** (see the last
+   section); contributors do not need to.
+
+## The manifest
+
+`agentport-bench run` writes `<your file>.manifest.json` next to your `.jsonl`. All eight fields
+below are required by the tool's `RunManifest` model (none has a default):
+
+| field | meaning |
+|---|---|
+| `harness_version` | Version of the `agentport-bench` package that produced the run (`0.1.0` at the pin). |
+| `library_version` | Version of the safelabs-eval prompt library that was installed when the run happened (`1.13.0` at the pin). Read from the install, not set by you. |
+| `model` | The model id you declared with `--model`. Not verified by the harness. |
+| `framework` | What the run was driven through. `run` sets it to the adapter name, `http` or `custom` — there is no separate option. |
+| `started_at` | UTC ISO-8601 time the `run` invocation started. `"unknown (…)"` if the manifest was regenerated or the file was converted. |
+| `finished_at` | UTC ISO-8601 time it finished; same caveat. |
+| `trial_count` | Number of trials written by that `run` invocation (with `--resume`, trials already in the file are not counted). `agentport-bench manifest` sets it to the number of rows in the file. |
+| `include_raw_output` | Whether raw model text was written. Must be `false`; CI rejects `true`. |
+
+What is actually checked: **`agentport-bench validate` does not read the manifest.** CI checks only
+that the manifest file exists, is valid JSON, and has `include_raw_output` exactly `false`
+(`scripts/check_manifest_no_raw_output.py`). The leaderboard script reads `model` and `framework`
+from the rows of the `.jsonl`, not from the manifest or the filename. The other seven fields are
+provenance for reviewers.
+
+## Filenames and the `framework` label
+
+```
+<model>__<framework>__<library_version>__<yyyymmdd>.jsonl
+<model>__<framework>__<library_version>__<yyyymmdd>.manifest.json
+```
+
+- **What sets `framework`.** `agentport-bench run` writes the **adapter name** (`http` or
+  `custom`) as `framework` in every row and in the manifest (`framework=adapter_name` in the CLI).
+  The CLI has no option to record the agent framework you are testing (for example LangChain)
+  beyond that. The existing converted submissions use `bare-api`, a label chosen by the
+  conversion script, not by `run`.
+- **Filename parts are a convention.** No tool parses them. Use the `model` and `framework` values
+  that are in your rows and the manifest's `library_version`, so that the name describes the file.
+  The one thing that is enforced is that the `.jsonl` and `.manifest.json` share the same stem:
+  CI looks for the manifest by replacing `.jsonl` with `.manifest.json`.
+- **`<yyyymmdd>`** is the date (UTC, `yyyymmdd`) on which you produced the file. Its only purpose is
+  to keep successive runs of the same model, framework and library version from colliding. It is not
+  validated and not read by any tool. (For the six converted files, `20260918` is the conversion
+  date; the original run time is not recoverable.)
 
 ## Privacy policy — read this before you submit
 
@@ -97,6 +164,6 @@ Regenerates `leaderboard/data.json` and `leaderboard/index.md` from every file c
 `submissions/`. It imports the real grouping/comparability logic from the installed
 `agentport_bench` package (`is_library_version_comparable`,
 `cli._group_by_comparable_library_version` — the exact function `agentport-bench compare`
-itself uses) rather than reimplementing the grouping rule. Commit the regenerated files
-alongside your submission PR, or in a separate PR if you're just refreshing after someone
-else's merge.
+itself uses) rather than reimplementing the grouping rule. **A maintainer runs this after merging**
+and commits the regenerated files; contributors do not need to include them in a submission PR.
+There is no scheduled regeneration job.
