@@ -56,8 +56,7 @@ package is installed from GitHub at a pinned commit, and its dependencies from P
    This writes your results file **and** a `.manifest.json` sidecar. Submit both. Notes:
    - `--adapter` is `http` or `custom`. The `http` adapter POSTs `{"prompt": "<text>"}` to
      `--target` and reads the reply from one of the keys `response`, `output`, `message`, `text`,
-     `content` or `result`. `--adapter-kwarg KEY=VALUE` passes plain strings, so anything that needs
-     a structured value (for example HTTP headers or a different request body) has to go through
+     `content` or `result`. For anything more complex (for example custom headers or a different request body), use
      `--adapter custom --module "your.module:YourAdapter"`. Details: `docs/AGENTPORT_BENCH.md` §5–6
      in `safelabs-eval`.
    - A full run is 300 prompts × `--seeds` (default 1) calls, with `--timeout-s` 30 and
