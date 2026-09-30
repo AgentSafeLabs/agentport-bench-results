@@ -167,6 +167,3 @@ Regenerates `leaderboard/data.json` and `leaderboard/index.md` from every file c
 itself uses) rather than reimplementing the grouping rule. **A maintainer runs this after merging**
 and commits the regenerated files; contributors do not need to include them in a submission PR.
 There is no scheduled regeneration job.
-<!-- DRAFT DECISION for maintainers: the current text says to commit the regenerated files with the
-     PR or separately, and the README says to run it after merge; this draft picks "maintainer
-     after merge". Change if contributors should do it. -->

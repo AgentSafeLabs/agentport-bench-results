@@ -81,9 +81,6 @@ package is installed from GitHub at a pinned commit, and its dependencies from P
 6. **Leaderboard refresh.** After your PR is merged, a **maintainer** regenerates
    `leaderboard/data.json` and `leaderboard/index.md` with `python leaderboard/build_leaderboard.py`;
    you do not need to. There is no scheduled regeneration job.
-   <!-- DRAFT DECISION for maintainers: stated as a maintainer step because no scheduled workflow
-        exists and the current README/CONTRIBUTING disagree; change here if contributors should
-        commit the regenerated files instead. -->
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the manifest fields, the full requirements, and the
 **privacy policy — no raw model completions are ever submitted here.**
