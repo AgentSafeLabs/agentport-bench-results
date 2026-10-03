@@ -19,12 +19,9 @@ kind: **converted from a prior safelabs-eval run; timestamps unavailable; `bare-
 
 - **Python 3.11 or newer** (the package requires it; CI uses 3.12), **git**, and network access.
 - Install with `pip install -r requirements.txt` from the root of your clone. The file pins one
-  exact `safelabs-eval` commit (`8aadf12` at the time of writing; the file is the source of truth)
-  and `agentport_bench` ships inside that package.
-- **The pip warning.** Installing prints
-  `WARNING: Did not find branch or tag '8aadf12', assuming revision or ref.` It is expected and
-  harmless: the pin is a commit hash, not a branch or tag, so pip checks out that revision. Any
-  other error or warning is not expected and worth reporting.
+  exact released `safelabs-eval` version (`0.11.2` at the time of writing; the file is the source
+  of truth), installed from PyPI, and `agentport_bench` ships inside that package. Any error or
+  warning during install is not expected and worth reporting.
 
 ## Fork-and-PR flow
 
@@ -86,7 +83,7 @@ provenance for reviewers.
 `prompt_id + model + framework + trial_seed + raw_output`) is that a submission's integrity
 is verifiable *without* publishing completions.
 
-- `BenchTrialResult` has no field for raw text, and as of `safelabs-eval` commit `8aadf12`,
+- `BenchTrialResult` has no field for raw text, and since `safelabs-eval` 0.11.0,
   it **actively rejects** any unexpected field (`extra="forbid"`) — including an
   accidentally-included `raw_output` key — rather than silently discarding it while the
   literal text stays in your committed file and PR diff forever. `agentport-bench validate`
@@ -144,11 +141,11 @@ try to suppress this flag; it isn't a problem to fix.
    supplementary defense-in-depth, not a replacement for the schema-level `extra="forbid"`
    protection.
 
-## Updating the pinned `safelabs-eval` commit
+## Updating the pinned `safelabs-eval` version
 
-`requirements.txt` pins an exact commit, not `main` or a tag, because `agentport_bench` is
-unreleased (v0.1.0) — a floating ref would let unrelated future commits silently change what
-this repo validates and aggregates against. Bumping the pin is a deliberate PR of its own:
+`requirements.txt` pins an exact released version (`safelabs-eval==X.Y.Z`), not a version range,
+so that unrelated future `safelabs-eval` releases cannot silently change what this repo
+validates and aggregates against. Bumping the pin is a deliberate PR of its own:
 update `requirements.txt`, re-run `agentport-bench validate` against every existing file in
 `submissions/` to confirm nothing that was previously accepted now fails (a behavior change
 upstream, e.g. a stricter schema check, could affect old submissions), and note the bump's
