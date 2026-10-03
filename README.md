@@ -44,10 +44,9 @@ package is installed from GitHub at a pinned commit, and its dependencies from P
    python3.12 -m venv .venv && source .venv/bin/activate   # any Python >= 3.11 works
    pip install -r requirements.txt
    ```
-   `requirements.txt` pins one exact `safelabs-eval` commit (`8aadf12` at the time of writing;
-   the file is the source of truth). `agentport_bench` ships inside that package. pip will print
-   `WARNING: Did not find branch or tag '8aadf12', assuming revision or ref.` — this is expected
-   and harmless: the pin is a commit hash, not a branch or tag, so pip checks out that revision.
+   `requirements.txt` pins one exact released `safelabs-eval` version (`0.11.2` at the time of
+   writing; the file is the source of truth), installed from PyPI. `agentport_bench` ships inside
+   that package.
 3. **Run the benchmark.**
    ```bash
    agentport-bench run --adapter http --target <your-endpoint> --model <your-model-id> \
@@ -127,11 +126,12 @@ verdict is exactly `pass`; `uncertain`, `fail` and `vulnerable` all count agains
 - **Store raw model completions.** `BenchTrialResult` (the schema every submission is
   validated against) has no field for one — integrity is verified via `payload_hash`
   instead. `BenchTrialResult` now also **rejects any unexpected field outright**
-  (`extra="forbid"`, `safelabs-eval` commit `8aadf12`), so a submission accidentally
+  (`extra="forbid"`, since `safelabs-eval` 0.11.0), so a submission accidentally
   carrying a stray `raw_output` key fails validation rather than silently stripping it
   while the text stays committed in the file.
-- **Capture token usage.** Out of scope for `agentport_bench` v0.1.0; `usage` is always
-  `null` in every submission.
+- **Capture token usage for every adapter.** Since `safelabs-eval` 0.11.0, `usage` is filled
+  when the adapter reports it (HTTP, LangChain, Google ADK, OpenAI Agents); it is `null` for
+  other adapters and for submissions converted from earlier runs.
 - **Reconstruct historical prompt-library snapshots.** `safelabs-eval` only ships its
   current library content — a submission's `prompt_id`/`category` can only be checked
   against the *currently installed* library, not whatever it looked like at an older
